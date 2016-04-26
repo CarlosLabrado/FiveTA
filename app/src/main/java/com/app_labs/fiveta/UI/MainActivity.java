@@ -1,6 +1,7 @@
 package com.app_labs.fiveta.UI;
 
 import android.os.Bundle;
+import android.support.annotation.IdRes;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -9,13 +10,17 @@ import com.app_labs.fiveta.util.LogUtil;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import it.sephiroth.android.library.bottomnavigation.BottomNavigation;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements BottomNavigation.OnMenuItemSelectionListener {
 
     private static final String TAG = LogUtil.makeLogTag(MainActivity.class);
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
+
+    @Bind(R.id.BottomNavigation)
+    BottomNavigation mBottomNavigation;
 
 
     @Override
@@ -26,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
 
         /** toolBar **/
         setUpToolBar();
+
+        initializeBottomNavigation(savedInstanceState);
+
     }
 
     /**
@@ -33,13 +41,13 @@ public class MainActivity extends AppCompatActivity {
      */
     public void setUpToolBar() {
         setSupportActionBar(toolbar);
-        setActionBarTitle("Replace me!", null, false);
-        // if (getSupportActionBar() != null) {
-        getSupportActionBar().setDisplayShowTitleEnabled(true);
-        // enabling action bar app icon and behaving it as toggle button
-        getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        //  }
+        setActionBarTitle(getResources().getString(R.string.app_name), null, false);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayShowTitleEnabled(true);
+            // enabling action bar app icon and behaving it as toggle button
+            getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setHomeButtonEnabled(true);
+        }
     }
 
     /**
@@ -64,5 +72,27 @@ public class MainActivity extends AppCompatActivity {
                 getSupportActionBar().setDisplayHomeAsUpEnabled(false);
             }
         }
+    }
+
+    public BottomNavigation getBottomNavigation() {
+        return mBottomNavigation;
+    }
+
+    protected void initializeBottomNavigation(final Bundle savedInstanceState) {
+        if (null == savedInstanceState) {
+            mBottomNavigation.setDefaultSelectedIndex(0);
+        }
+    }
+
+    @Override
+    public void onMenuItemSelect(@IdRes int itemId, int position) {
+        LogUtil.logI(TAG, "onMenuItemSelect(" + itemId + ", " + position + ")");
+
+    }
+
+    @Override
+    public void onMenuItemReselect(@IdRes int itemId, int position) {
+        LogUtil.logI(TAG, "onMenuItemReselect(" + itemId + ", " + position + ")");
+
     }
 }

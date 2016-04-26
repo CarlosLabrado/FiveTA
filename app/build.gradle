@@ -56,4 +56,8 @@ dependencies {
     compile 'com.birbit:android-priority-jobqueue:2.0.0-alpha2'
 
     testCompile 'junit:junit:4.12'
+
+    //tabbed view
+    compile 'it.sephiroth.android.library.bottomnavigation:bottom-navigation:1.0.7'
+
 }
