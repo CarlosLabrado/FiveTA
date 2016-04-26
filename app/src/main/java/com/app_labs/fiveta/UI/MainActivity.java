@@ -1,9 +1,13 @@
 package com.app_labs.fiveta.UI;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.transition.TransitionInflater;
 
 import com.app_labs.fiveta.R;
 import com.app_labs.fiveta.util.LogUtil;
@@ -11,6 +15,7 @@ import com.app_labs.fiveta.util.LogUtil;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import it.sephiroth.android.library.bottomnavigation.BottomNavigation;
+import it.sephiroth.android.library.bottonnavigation.BuildConfig;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigation.OnMenuItemSelectionListener {
 
@@ -18,14 +23,15 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
-
-    @Bind(R.id.BottomNavigation)
+    @Bind(R.id.bottomNavigation)
     BottomNavigation mBottomNavigation;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        BottomNavigation.DEBUG = BuildConfig.DEBUG;
+
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
@@ -80,19 +86,55 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
 
     protected void initializeBottomNavigation(final Bundle savedInstanceState) {
         if (null == savedInstanceState) {
+            mBottomNavigation.setOnMenuItemClickListener(this);
             mBottomNavigation.setDefaultSelectedIndex(0);
+            displayView(0);
         }
     }
 
     @Override
-    public void onMenuItemSelect(@IdRes int itemId, int position) {
+    public void onMenuItemSelect(final int itemId, int position) {
         LogUtil.logI(TAG, "onMenuItemSelect(" + itemId + ", " + position + ")");
-
+        displayView(position);
     }
 
     @Override
     public void onMenuItemReselect(@IdRes int itemId, int position) {
         LogUtil.logI(TAG, "onMenuItemReselect(" + itemId + ", " + position + ")");
 
+    }
+
+    private void displayView(int position) {
+        // update the main content by replacing fragments
+        Fragment fragment = null;
+
+        switch (position) {
+            case 0:
+                fragment = new PersonalFragment();
+                break;
+            case 1:
+                fragment = new GroupFragment();
+                break;
+            case 2:
+                fragment = new FavoritesFragment();
+                break;
+            default:
+                break;
+        }
+        if (fragment != null) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                fragment.setEnterTransition(TransitionInflater.from(this).inflateTransition(android.R.transition.explode));
+                fragment.setExitTransition(TransitionInflater.from(this).inflateTransition(android.R.transition.fade));
+            }
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .addToBackStack(null)
+                    .replace(R.id.container, fragment)
+                    .commit();
+            LogUtil.logD(TAG, "fragment added " + fragment.getTag());
+        } else {
+            // error in creating fragment
+            LogUtil.logE(TAG, "Error in creating fragment");
+        }
     }
 }
