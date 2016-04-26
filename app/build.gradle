@@ -48,11 +48,12 @@ dependencies {
     compile 'com.getbase:floatingactionbutton:1.10.1'
 
     // View "injection" Library
-    compile 'com.jakewharton:butterknife:8.0.0'
+    compile 'com.jakewharton:butterknife:7.0.1'
     // ActiveAndroid ORM (Object Relational Mapper)
     compile 'com.michaelpardo:activeandroid:3.1.0-SNAPSHOT'
 
     // better background jobs
     compile 'com.birbit:android-priority-jobqueue:2.0.0-alpha2'
 
+    testCompile 'junit:junit:4.12'
 }
