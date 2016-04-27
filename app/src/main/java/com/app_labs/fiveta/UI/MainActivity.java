@@ -12,6 +12,8 @@ import android.transition.TransitionInflater;
 import com.app_labs.fiveta.R;
 import com.app_labs.fiveta.util.LogUtil;
 
+import java.util.Stack;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import it.sephiroth.android.library.bottomnavigation.BottomNavigation;
@@ -26,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
     @Bind(R.id.bottomNavigation)
     BottomNavigation mBottomNavigation;
 
+    private static Stack<Integer> mTabStack;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +37,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
 
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
+
+        mTabStack = new Stack<>();
 
         /** toolBar **/
         setUpToolBar();
@@ -108,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
         // update the main content by replacing fragments
         Fragment fragment = null;
 
+        mTabStack.push(position);
         switch (position) {
             case 0:
                 fragment = new PersonalFragment();
@@ -136,5 +142,28 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
             // error in creating fragment
             LogUtil.logE(TAG, "Error in creating fragment");
         }
+    }
+
+    /**
+     * If we press back we kill the fragment and the last fragment shows on the container, so we
+     * also have to show the tab that that container had.
+     * So we use a tab stack.
+     */
+    @Override
+    public void onBackPressed() {
+        try {
+            if (!mTabStack.empty()) {
+                mTabStack.pop();
+                if (!mTabStack.empty()) {
+                    mBottomNavigation.setSelectedIndex(mTabStack.peek(), true);
+                } else {
+                    finish();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            finish();
+        }
+
     }
 }
