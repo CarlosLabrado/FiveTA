@@ -151,6 +151,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
      */
     @Override
     public void onBackPressed() {
+        super.onBackPressed();
         try {
             if (!mTabStack.empty()) {
                 mTabStack.pop();
