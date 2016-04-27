@@ -6,4 +6,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="personal_create_a_new_eta">Create a new Personal ETA!</string>
+    <string name="group_create_a_new_eta">Create a new Group ETA!</string>
+    <string name="favorites_no_favorites">No favorites! add some favorites from either the Personal or Group sections.</string>
 </resources>
