@@ -1,6 +1,7 @@
 package com.app_labs.fiveta.ui;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -81,6 +82,8 @@ public class PersonalFragment extends Fragment {
 
     @OnClick(R.id.fab_personal_add)
     public void onClick() {
+        Intent intent = new Intent(getContext(), CreatePersonalActivity.class);
+        startActivity(intent);
         Toast.makeText(getContext(), "is this working?", Toast.LENGTH_SHORT).show();
     }
 }

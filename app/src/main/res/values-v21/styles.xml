@@ -3,6 +3,7 @@
 
     <style name="ButtonAppTheme" parent="android:Widget.Material.Button">
         <item name="android:background">@drawable/custom_button</item>
+        <item name="android:textColor">@color/white</item>
     </style>
 
 </resources>
