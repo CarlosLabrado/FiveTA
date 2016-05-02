@@ -13,8 +13,13 @@
     <string name="eta">ETA</string>
     <string name="personal_message_optional">Message(Optional):</string>
     <string name="personal_start">Start</string>
-    <string name="cd_personal_photo_of_the_contact">Photo of the contact</string>
+
+
     <string name="personal_new_eta_toolbar">new ETA</string>
     <string name="personal_eta_default_start_time">20</string>
     <string name="personal_create_min">min</string>
+
+    <!--Content Descriptors -->
+    <string name="cd_personal_photo_of_the_contact">Photo of the contact</string>
+
 </resources>
