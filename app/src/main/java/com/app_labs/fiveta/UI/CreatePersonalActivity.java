@@ -127,8 +127,8 @@ public class CreatePersonalActivity extends AppCompatActivity {
                 }
                 break;
             case R.id.imageButtonMinutesDown:
-                if (mTextViewCreatePersonalETA.getText().equals("5")) {
-                    mTextViewCreatePersonalETA.setText("0");
+                if (mTextViewCreatePersonalETA.getText().equals("10")) {
+                    mTextViewCreatePersonalETA.setText("5");
                     mImageButtonMinutesDown.setEnabled(false);
                 } else {
                     int timeSet = Integer.parseInt(mTextViewCreatePersonalETA.getText().toString());
