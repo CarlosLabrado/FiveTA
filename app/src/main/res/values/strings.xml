@@ -21,5 +21,6 @@
 
     <!--Content Descriptors -->
     <string name="cd_personal_photo_of_the_contact">Photo of the contact</string>
+    <string name="cd_group_location_preview">Location preview</string>
 
 </resources>
