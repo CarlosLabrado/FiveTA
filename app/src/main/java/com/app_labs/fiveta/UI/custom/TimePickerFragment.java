@@ -8,7 +8,7 @@ import android.text.format.DateFormat;
 import android.widget.TimePicker;
 
 import com.app_labs.fiveta.events.GetTimePickedEvent;
-import com.app_labs.fiveta.ui.CreatePersonalActivity;
+import com.app_labs.fiveta.ui.CreateGroupActivity;
 
 import java.util.Calendar;
 
@@ -31,6 +31,6 @@ public class TimePickerFragment extends DialogFragment
     }
 
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        CreatePersonalActivity.mBus.post(new GetTimePickedEvent(hourOfDay, minute));
+        CreateGroupActivity.mBus.post(new GetTimePickedEvent(hourOfDay, minute));
     }
 }

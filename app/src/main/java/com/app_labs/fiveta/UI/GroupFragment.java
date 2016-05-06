@@ -1,6 +1,7 @@
 package com.app_labs.fiveta.ui;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -76,5 +77,7 @@ public class GroupFragment extends Fragment {
 
     @OnClick(R.id.fab_group_add)
     public void onClick() {
+        Intent intent = new Intent(getActivity(), CreateGroupActivity.class);
+        startActivity(intent);
     }
 }

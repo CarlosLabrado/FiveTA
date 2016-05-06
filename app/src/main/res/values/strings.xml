@@ -23,4 +23,10 @@
     <string name="cd_personal_photo_of_the_contact">Photo of the contact</string>
     <string name="cd_group_location_preview">Location preview</string>
 
+
+    <string name="title_activity_create_group">CreateGroupActivity</string>
+    <string name="group_create_time_desc">Time:</string>
+    <string name="group_create_default_time">7:00PM</string>
+    <string name="group_create_start">Create</string>
+
 </resources>
