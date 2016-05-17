@@ -14,6 +14,10 @@
     <string name="personal_message_optional">Message(Optional):</string>
     <string name="personal_start">Start</string>
 
+    <!-- Base Error Strings-->
+    <string name="log_error_updating_data">Error updating data: </string>
+    <string name="log_error_the_read_failed">The read failed: </string>
+    <string name="log_error_occurred">"Error occurred: "</string>
 
     <string name="personal_new_eta_toolbar">new ETA</string>
     <string name="personal_eta_default_start_time">20</string>

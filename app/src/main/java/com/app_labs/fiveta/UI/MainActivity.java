@@ -1,16 +1,27 @@
 package com.app_labs.fiveta.ui;
 
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.TransitionInflater;
+import android.widget.Toast;
 
 import com.app_labs.fiveta.R;
+import com.app_labs.fiveta.model.User;
+import com.app_labs.fiveta.util.Constants;
 import com.app_labs.fiveta.util.LogUtil;
+import com.firebase.client.AuthData;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
+import com.firebase.client.ValueEventListener;
+import com.firebase.ui.auth.core.FirebaseLoginBaseActivity;
+import com.firebase.ui.auth.core.FirebaseLoginError;
 
 import java.util.Stack;
 
@@ -19,7 +30,7 @@ import butterknife.ButterKnife;
 import it.sephiroth.android.library.bottomnavigation.BottomNavigation;
 import it.sephiroth.android.library.bottonnavigation.BuildConfig;
 
-public class MainActivity extends AppCompatActivity implements BottomNavigation.OnMenuItemSelectionListener {
+public class MainActivity extends FirebaseLoginBaseActivity implements BottomNavigation.OnMenuItemSelectionListener {
 
     private static final String TAG = LogUtil.makeLogTag(MainActivity.class);
 
@@ -30,6 +41,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
 
     private static Stack<Integer> mTabStack;
 
+    private Firebase mFirebaseRef;
+    private ValueEventListener mUserRefListener;
+
+    private Firebase mUserRef;
+
+    private User mCurrentUser;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,12 +57,48 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        mFirebaseRef = new Firebase(Constants.FIREBASE_URL);
+
         mTabStack = new Stack<>();
 
         /** toolBar **/
         setUpToolBar();
 
         initializeBottomNavigation(savedInstanceState);
+
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        String encodedEmail = sp.getString(Constants.KEY_EMAIL, null);
+        mUserRef = new Firebase(Constants.FIREBASE_URL_USERS).child(encodedEmail);
+        /**
+         * Add ValueEventListeners to Firebase references
+         * to control get data and control behavior and visibility of elements
+         */
+        mUserRefListener = mUserRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                mCurrentUser = snapshot.getValue(User.class);
+
+                /**
+                 * Set the activity title to current user name if user is not null
+                 */
+                if (mCurrentUser != null) {
+                    /* Assumes that the first word in the user's name is the user's first name. */
+                    try {
+//                        String firstName = mCurrentUser.getName().split("\\s+")[0];
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+                LogUtil.logE(TAG,
+                        getString(R.string.log_error_the_read_failed) +
+                                firebaseError.getMessage());
+            }
+        });
+
 
     }
 
@@ -166,5 +221,40 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
             finish();
         }
 
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mUserRef.removeEventListener(mUserRefListener);
+    }
+
+    @Override
+    protected Firebase getFirebaseRef() {
+        return mFirebaseRef;
+    }
+
+    @Override
+    protected void onFirebaseLoginProviderError(FirebaseLoginError firebaseLoginError) {
+        dismissFirebaseLoginPrompt();
+        Toast.makeText(this, "There is a connection error, please try again", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    protected void onFirebaseLoginUserError(FirebaseLoginError firebaseLoginError) {
+        dismissFirebaseLoginPrompt();
+        Toast.makeText(this, "Non valid credentials, please try again", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onFirebaseLoggedIn(AuthData authData) {
+        Toast.makeText(this, "Hi ", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onFirebaseLoggedOut() {
+        finish();
+        // TODO: Handle logout
     }
 }

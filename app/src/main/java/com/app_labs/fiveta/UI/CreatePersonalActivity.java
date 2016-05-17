@@ -1,6 +1,13 @@
 package com.app_labs.fiveta.ui;
 
+import android.app.Activity;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -41,8 +48,15 @@ public class CreatePersonalActivity extends AppCompatActivity {
     ImageButton mImageButtonMinutesUp;
     @Bind(R.id.imageButtonMinutesDown)
     ImageButton mImageButtonMinutesDown;
+    @Bind(R.id.fab_personal_create_contact_add)
+    FloatingActionButton mFabPersonalCreateContactAdd;
 
+    public static final String TAG = CreatePersonalActivity.class.getSimpleName();
+    public static final int ACTIVITY_RESULT_CONTACT = 101;
+    private Uri uriContact;
+    private String contactID;     // contacts unique ID
     public static Bus mBus;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,5 +154,64 @@ public class CreatePersonalActivity extends AppCompatActivity {
             case R.id.buttonCreatePersonalStart:
                 break;
         }
+    }
+
+    @OnClick(R.id.fab_personal_create_contact_add)
+    public void onAddContactClick() {
+        Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+        startActivityForResult(intent, ACTIVITY_RESULT_CONTACT);
+    }
+
+    @Override
+    public void onActivityResult(int reqCode, int resultCode, Intent data) {
+        super.onActivityResult(reqCode, resultCode, data);
+
+        if (reqCode == ACTIVITY_RESULT_CONTACT) {
+            try {
+                if (resultCode == Activity.RESULT_OK) {
+                    Uri contactData = data.getData();
+                    Cursor cur = managedQuery(contactData, null, null, null, null);
+                    ContentResolver contact_resolver = getContentResolver();
+
+                    if (cur.moveToFirst()) {
+                        String id = cur.getString(cur.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
+                        String name;
+                        String no;
+
+                        Cursor phoneCur = contact_resolver.query(
+                                ContactsContract.Data.CONTENT_URI,
+                                null,
+                                ContactsContract.Data.CONTACT_ID + "=" + id + " AND "
+                                        + ContactsContract.Data.MIMETYPE + "='"
+                                        + ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE + "'", null,
+                                null);
+
+                        if (phoneCur != null && phoneCur.moveToFirst()) {
+                            name = phoneCur.getString(phoneCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+                            //no = phoneCur.getString(phoneCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                            phoneCur.getString(phoneCur.getColumnIndex(ContactsContract.CommonDataKinds.Phone.PHOTO_URI));
+                            //if (no.length() > 10) {
+                            //  no = no.substring(no.length() - 10);
+                            //}
+                        }
+                        Uri person = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long
+                                .parseLong(id));
+                        Uri photoUri = Uri.withAppendedPath(person, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
+
+                        mImageViewCreatePersonal.setImageURI(photoUri);
+
+                        if (phoneCur != null) {
+                            phoneCur.close();
+                        }
+
+//                        Log.e("Name and phone number", name + " : " + no);
+                    }
+                }
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+//                Log.e(TAG, e.toString());
+            }
+        }
+
     }
 }
