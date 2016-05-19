@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "929026690581",
+    "firebase_url": "https://five-1302.firebaseio.com",
+    "project_id": "five-1302",
+    "storage_bucket": "five-1302.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:929026690581:android:2eb8e8baf23c6400",
+        "android_client_info": {
+          "package_name": "com.app_labs.fiveta"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "929026690581-lcn5kdbehsbs48h87up4itunul5264kh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.app_labs.fiveta",
+            "certificate_hash": "EA407AAA76715910055DAA2C78D958EE6287D6F9"
+          }
+        },
+        {
+          "client_id": "929026690581-2ldevlkggorrekj1j4914ecp1sj19bq3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD_oHkBBHGcmbiGKzYmLbDzkHKV-6BxXfI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "929026690581-2ldevlkggorrekj1j4914ecp1sj19bq3.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -7,7 +7,6 @@ import com.activeandroid.ActiveAndroid;
 import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.config.Configuration;
 import com.birbit.android.jobqueue.log.CustomLogger;
-import com.firebase.client.Firebase;
 
 /**
  * We initialize some of the libraries here
@@ -36,7 +35,6 @@ public class FirstApplication extends Application {
 
         configureJobManager();
 
-        Firebase.setAndroidContext(this);
 
     }
 
