@@ -29,7 +29,7 @@
             android:theme="@style/AppTheme">
         </activity>
         <activity
-            android:name=".ui.CreatePersonalActivity"
+            android:name=".ui.personal.CreatePersonalActivity"
             android:label="@string/title_activity_create_personal"
             android:parentActivityName=".ui.MainActivity"
             android:theme="@style/AppTheme">
@@ -38,7 +38,7 @@
                 android:value="com.app_labs.fiveta.ui.MainActivity"/>
         </activity>
         <activity
-            android:name=".ui.CreateGroupActivity"
+            android:name=".ui.group.CreateGroupActivity"
             android:label="@string/title_activity_create_group"
             android:parentActivityName=".ui.MainActivity"
             android:theme="@style/AppTheme">
@@ -47,7 +47,7 @@
                 android:value="com.app_labs.fiveta.ui.MainActivity"/>
         </activity>
         <activity
-            android:name=".ui.AddFriendActivity"
+            android:name=".ui.Friends.AddFriendActivity"
             android:label="@string/title_activity_add_friend"
             android:parentActivityName=".ui.MainActivity"
             android:theme="@style/AppTheme">

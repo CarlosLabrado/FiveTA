@@ -1,4 +1,4 @@
-package com.app_labs.fiveta.ui;
+package com.app_labs.fiveta.ui.favorites;
 
 
 import android.os.Bundle;

@@ -20,6 +20,10 @@ import android.view.View;
 
 import com.app_labs.fiveta.R;
 import com.app_labs.fiveta.model.User;
+import com.app_labs.fiveta.ui.Friends.FriendsFragment;
+import com.app_labs.fiveta.ui.favorites.FavoritesFragment;
+import com.app_labs.fiveta.ui.group.GroupFragment;
+import com.app_labs.fiveta.ui.personal.PersonalFragment;
 import com.app_labs.fiveta.util.Constants;
 import com.app_labs.fiveta.util.LogUtil;
 import com.firebase.ui.auth.AuthUI;

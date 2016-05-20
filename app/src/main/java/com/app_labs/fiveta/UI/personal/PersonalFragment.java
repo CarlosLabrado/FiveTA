@@ -1,4 +1,4 @@
-package com.app_labs.fiveta.ui;
+package com.app_labs.fiveta.ui.personal;
 
 
 import android.content.Intent;
@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.app_labs.fiveta.R;
 
@@ -84,6 +83,5 @@ public class PersonalFragment extends Fragment {
     public void onClick() {
         Intent intent = new Intent(getContext(), CreatePersonalActivity.class);
         startActivity(intent);
-        Toast.makeText(getContext(), "is this working?", Toast.LENGTH_SHORT).show();
     }
 }

@@ -8,7 +8,7 @@ import android.text.format.DateFormat;
 import android.widget.TimePicker;
 
 import com.app_labs.fiveta.events.GetTimePickedEvent;
-import com.app_labs.fiveta.ui.CreateGroupActivity;
+import com.app_labs.fiveta.ui.group.CreateGroupActivity;
 
 import java.util.Calendar;
 

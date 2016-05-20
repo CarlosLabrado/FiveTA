@@ -1,4 +1,4 @@
-package com.app_labs.fiveta.ui;
+package com.app_labs.fiveta.ui.Friends;
 
 import android.os.Bundle;
 import android.support.annotation.MainThread;

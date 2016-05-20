@@ -1,4 +1,4 @@
-package com.app_labs.fiveta.ui;
+package com.app_labs.fiveta.ui.personal;
 
 import android.app.Activity;
 import android.content.ContentResolver;
