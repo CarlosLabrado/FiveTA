@@ -7,18 +7,23 @@
       app:bbn_rippleColor="#33ffffff">
 
     <item
-        android:id="@+id/bbn_item1"
+        android:id="@+id/bbn_personal"
         android:color="@color/colorPrimary"
         android:icon="@drawable/ic_person_white_24dp"
         android:title="@string/bottom_menu_personal"/>
     <item
-        android:id="@+id/bbn_item2"
+        android:id="@+id/bbn_group"
         android:color="@android:color/holo_green_dark"
-        android:icon="@drawable/ic_group_white_24dp"
+        android:icon="@drawable/ic_map_white_24dp"
         android:title="@string/bottom_menu_group"/>
     <item
-        android:id="@+id/bbn_item3"
+        android:id="@+id/bbn_favorite"
         android:color="@android:color/holo_orange_dark"
         android:icon="@drawable/ic_heart_white_24dp"
         android:title="@string/bottom_menu_favorites"/>
+    <item
+        android:id="@+id/bbn_friends"
+        android:color="@android:color/holo_purple"
+        android:icon="@drawable/ic_group_white_24dp"
+        android:title="@string/bottom_menu_friends"/>
 </menu>

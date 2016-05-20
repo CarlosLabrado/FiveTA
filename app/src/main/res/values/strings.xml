@@ -3,6 +3,7 @@
     <string name="bottom_menu_personal">Personal</string>
     <string name="bottom_menu_group">Group</string>
     <string name="bottom_menu_favorites">Favorites</string>
+    <string name="bottom_menu_friends">Friends</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -22,6 +23,8 @@
     <string name="personal_new_eta_toolbar">new ETA</string>
     <string name="personal_eta_default_start_time">20</string>
     <string name="personal_create_min">min</string>
+
+    <string name="friends_add_toolbar">Add a friend from the list</string>
 
     <!--Content Descriptors -->
     <string name="cd_personal_photo_of_the_contact">Photo of the contact</string>
@@ -54,5 +57,10 @@
     <string name="group_create_time_desc">Time:</string>
     <string name="group_create_default_time">7:00PM</string>
     <string name="group_create_start">Create</string>
+    <string name="title_activity_add_friend">AddFriendActivity</string>
+
+    <!--Add friend-->
+    <string name="error_cant_friend_yourself">You can\'t add yourself as a friend</string>
+    <string name="snack_friend_added">Friend added</string>
 
 </resources>
