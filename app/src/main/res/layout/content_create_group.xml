@@ -49,7 +49,8 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:singleLine="true"
-            tools:text="D and D night"/>
+            tools:text="D and D night"
+            android:hint="Title of the event"/>
 
         <fragment
             android:id="@+id/mapLite"
@@ -71,7 +72,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/group_create_time_desc"
-                android:textSize="@dimen/text_big_eta"/>
+                android:textSize="@dimen/text_big_eta"
+                android:id="@+id/textView2"/>
 
             <TextView
                 android:id="@+id/textViewCreateGroupTime"

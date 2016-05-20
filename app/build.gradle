@@ -30,7 +30,7 @@ android {
     }
 }
 ext {
-    servicesVersion = '23.3.0'
+    servicesVersion = '23.4.0'
 }
 
 dependencies {
@@ -56,6 +56,7 @@ dependencies {
     // firebase login UI
     compile 'com.firebaseui:firebase-ui-auth:0.4.0'
     compile 'com.firebaseui:firebase-ui-database:0.4.0'
+    compile 'com.google.firebase:firebase-storage:9.0.0'
 
 
     // enhanced event bus

@@ -8,6 +8,7 @@ import java.util.HashMap;
 public class User {
     private String name;
     private String email;
+    private String imageUrl;
     private HashMap<String, Object> timestampJoined;
 
     /**
@@ -24,9 +25,10 @@ public class User {
      * @param email
      * @param timestampJoined
      */
-    public User(String name, String email, HashMap<String, Object> timestampJoined) {
+    public User(String name, String email, String imageUrl, HashMap<String, Object> timestampJoined) {
         this.name = name;
         this.email = email;
+        this.imageUrl = imageUrl;
         this.timestampJoined = timestampJoined;
     }
 
@@ -36,6 +38,10 @@ public class User {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
     }
 
     public HashMap<String, Object> getTimestampJoined() {

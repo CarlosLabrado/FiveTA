@@ -137,7 +137,7 @@ public class LoginActivity extends Activity {
                     HashMap<String, Object> timestampJoined = new HashMap<>();
                     timestampJoined.put(Constants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
 
-                    User newUser = new User(userName, unprocessedEmail, timestampJoined);
+                    User newUser = new User(userName, unprocessedEmail, null, timestampJoined);
                     userLocation.child(encodedEmail).setValue(newUser);
                 }
             }

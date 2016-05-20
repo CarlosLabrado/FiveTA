@@ -1,9 +1,8 @@
-package com.app_labs.fiveta.ui.Friends;
+package com.app_labs.fiveta.ui.personal;
 
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -13,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.app_labs.fiveta.R;
+import com.app_labs.fiveta.events.SelectedFriendFromDialogEvent;
 import com.app_labs.fiveta.model.User;
 import com.app_labs.fiveta.util.Constants;
 import com.app_labs.fiveta.util.Utils;
@@ -25,26 +25,19 @@ import com.google.firebase.database.Query;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link FriendsFragment#newInstance} factory method to
+ * Use the {@link ChoseFriendDialogFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FriendsFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
+public class ChoseFriendDialogFragment extends DialogFragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-    @Bind(R.id.friendLists)
-    RecyclerView mFriendListRecyclerView;
-    @Bind(R.id.fab_friend_add)
-    FloatingActionButton mFabFriendAdd;
+    private static final String ARG_CURRENT_USER = "currentUser";
+    @Bind(R.id.recyclerViewFriendListDialog)
+    RecyclerView mRecyclerViewFriendList;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private String mCurrentUserStringRef;
 
     private DatabaseReference mRef;
     private Query mUserFriends;
@@ -56,7 +49,7 @@ public class FriendsFragment extends Fragment {
     private FirebaseRecyclerAdapter<User, UserHolder> mRecyclerViewAdapter;
 
 
-    public FriendsFragment() {
+    public ChoseFriendDialogFragment() {
         // Required empty public constructor
     }
 
@@ -64,16 +57,13 @@ public class FriendsFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FriendsFragment.
+     * @param currentUser Parameter 1.
+     * @return A new instance of fragment ChoseFriendDialogFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static FriendsFragment newInstance(String param1, String param2) {
-        FriendsFragment fragment = new FriendsFragment();
+    public static ChoseFriendDialogFragment newInstance(String currentUser) {
+        ChoseFriendDialogFragment fragment = new ChoseFriendDialogFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_CURRENT_USER, currentUser);
         fragment.setArguments(args);
         return fragment;
     }
@@ -82,8 +72,7 @@ public class FriendsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mCurrentUserStringRef = getArguments().getString(ARG_CURRENT_USER);
         }
     }
 
@@ -91,7 +80,8 @@ public class FriendsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_friends, container, false);
+        View view = inflater.inflate(R.layout.fragment_chose_friend_dialog, container, false);
+
         ButterKnife.bind(this, view);
 
         mRef = FirebaseDatabase.getInstance().getReference();
@@ -100,13 +90,14 @@ public class FriendsFragment extends Fragment {
 
         populateRecyclerAdapter();
 
-        return view;
-    }
 
+        return view;
+
+    }
 
     private void populateRecyclerAdapter() {
         mManager = new LinearLayoutManager(getContext());
-        mFriendListRecyclerView.setLayoutManager(mManager);
+        mRecyclerViewFriendList.setLayoutManager(mManager);
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
         String currentLoggedUser = "";
@@ -128,8 +119,8 @@ public class FriendsFragment extends Fragment {
                     @Override
                     public void onClick(View v) {
                         String selectedUserKey = Utils.encodeEmail(model.getEmail());
-                        // TODO: maybe delete the user?
 //                        createFriendRelationship(selectedUserKey);
+                        CreatePersonalActivity.mBus.post(new SelectedFriendFromDialogEvent(model));
 
                     }
                 });
@@ -137,19 +128,13 @@ public class FriendsFragment extends Fragment {
             }
         };
 
-        mFriendListRecyclerView.setAdapter(mRecyclerViewAdapter);
+        mRecyclerViewFriendList.setAdapter(mRecyclerViewAdapter);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
-    }
-
-    @OnClick(R.id.fab_friend_add)
-    public void onClick() {
-        Intent intent = new Intent(getActivity(), AddFriendActivity.class);
-        startActivity(intent);
     }
 
     public static class UserHolder extends RecyclerView.ViewHolder {

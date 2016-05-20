@@ -35,4 +35,6 @@ public class Constants {
     public static final String PROVIDER_DATA_DISPLAY_NAME = "displayName";
 
     public static final String USER_FRIENDS = "friends";
+    public static final String FIREBASE_BUCKET = "gs://five-1302.appspot.com";
+    public static final String USER_FRIENDS_IMAGES = "userImages";
 }
