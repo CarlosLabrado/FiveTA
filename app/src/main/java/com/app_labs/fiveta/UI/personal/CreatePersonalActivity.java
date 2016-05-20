@@ -8,7 +8,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -21,8 +24,22 @@ import android.widget.Toast;
 
 import com.app_labs.fiveta.R;
 import com.app_labs.fiveta.events.GetTimePickedEvent;
+import com.app_labs.fiveta.events.SelectedFriendFromDialogEvent;
+import com.app_labs.fiveta.model.User;
+import com.app_labs.fiveta.ui.custom.CircleTransform;
+import com.app_labs.fiveta.util.Constants;
+import com.app_labs.fiveta.util.Utils;
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
+
+import java.io.File;
+import java.io.IOException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -53,10 +70,14 @@ public class CreatePersonalActivity extends AppCompatActivity {
 
     public static final String TAG = CreatePersonalActivity.class.getSimpleName();
     public static final int ACTIVITY_RESULT_CONTACT = 101;
-    private Uri uriContact;
-    private String contactID;     // contacts unique ID
     public static Bus mBus;
 
+    private User mSelectedFriend;
+
+    DialogFragment mChoseFriendDialogFragment;
+
+
+    FirebaseStorage storage = FirebaseStorage.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +91,8 @@ public class CreatePersonalActivity extends AppCompatActivity {
 
         /** toolBar **/
         setUpToolBar();
+
+
     }
 
     /**
@@ -158,8 +181,56 @@ public class CreatePersonalActivity extends AppCompatActivity {
 
     @OnClick(R.id.fab_personal_create_contact_add)
     public void onAddContactClick() {
-        Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-        startActivityForResult(intent, ACTIVITY_RESULT_CONTACT);
+        new ChoseFriendDialogFragment();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        mChoseFriendDialogFragment = ChoseFriendDialogFragment.newInstance("");
+        mChoseFriendDialogFragment.show(fragmentManager, "ChoseFriendDialogFragment");
+
+//        Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+//        startActivityForResult(intent, ACTIVITY_RESULT_CONTACT);
+    }
+
+    /**
+     * Gets the selectedFriend and populates the image view with his image
+     *
+     * @param event
+     */
+    @Subscribe
+    public void getSelectedFriendFromDialog(SelectedFriendFromDialogEvent event) {
+        mChoseFriendDialogFragment.dismiss();
+        if (event != null) {
+            mSelectedFriend = event.getUser();
+            StorageReference storageRef = storage.getReferenceFromUrl(Constants.FIREBASE_BUCKET);
+
+            String selectedFriendEncodedId = Utils.encodeEmail(mSelectedFriend.getEmail());
+
+            StorageReference friendImageRef = storageRef.child(Constants.USER_FRIENDS_IMAGES).child(selectedFriendEncodedId + ".jpg");
+
+            File localFile = null;
+            try {
+                localFile = File.createTempFile("friendimages", "jpg");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            assert localFile != null;
+            final File finalLocalFile = localFile;
+            friendImageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                @Override
+                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                    Glide.with(getApplicationContext())
+                            .load(finalLocalFile)
+                            .transform(new CircleTransform(getApplicationContext()))
+                            .into(mImageViewCreatePersonal);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    e.printStackTrace();
+                }
+            });
+
+        }
     }
 
     @Override

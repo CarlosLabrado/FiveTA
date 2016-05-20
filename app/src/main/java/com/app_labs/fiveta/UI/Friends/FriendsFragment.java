@@ -117,7 +117,7 @@ public class FriendsFragment extends Fragment {
         mUserFriends = mRef.child(Constants.USER_FRIENDS).child(currentLoggedUser);
 
         mRecyclerViewAdapter = new FirebaseRecyclerAdapter<User, UserHolder>(
-                User.class, R.layout.item_users, UserHolder.class, mUserFriends) {
+                User.class, R.layout.item_friends, UserHolder.class, mUserFriends) {
 
             @Override
             protected void populateViewHolder(UserHolder viewHolder, final User model, int position) {
@@ -166,12 +166,12 @@ public class FriendsFragment extends Fragment {
         }
 
         public void setName(String name) {
-            TextView field = (TextView) mView.findViewById(R.id.textViewUsersName);
+            TextView field = (TextView) mView.findViewById(R.id.textViewFriendName);
             field.setText(name);
         }
 
         public void setEmail(String text) {
-            TextView field = (TextView) mView.findViewById(R.id.textViewUsersEmail);
+            TextView field = (TextView) mView.findViewById(R.id.textViewFriendEmail);
             field.setText(text);
         }
     }

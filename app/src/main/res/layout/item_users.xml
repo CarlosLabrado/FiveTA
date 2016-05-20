@@ -27,8 +27,8 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_toEndOf="@+id/imageViewGroupFriendPicture"
-                    android:layout_toRightOf="@+id/imageViewGroupFriendPicture"
+                    android:layout_toEndOf="@+id/imageViewUserPicture"
+                    android:layout_toRightOf="@+id/imageViewUserPicture"
                     android:orientation="vertical">
 
                     <TextView
@@ -45,7 +45,7 @@
                 </LinearLayout>
 
                 <ImageView
-                    android:id="@+id/imageViewGroupFriendPicture"
+                    android:id="@+id/imageViewUserPicture"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:background="@drawable/btn_cling_normal"
