@@ -67,15 +67,15 @@ public class AddFriendActivity extends AppCompatActivity {
                 User.class, R.layout.item_users, UserHolder.class, mUsersRef) {
 
             @Override
-            protected void populateViewHolder(UserHolder viewHolder, final User model, int position) {
-                viewHolder.setName(model.getName());
-                viewHolder.setEmail(model.getEmail());
+            protected void populateViewHolder(UserHolder viewHolder, final User user, int position) {
+                viewHolder.setName(user.getName());
+                viewHolder.setEmail(user.getEmail());
 
                 viewHolder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        String selectedUserKey = Utils.encodeEmail(model.getEmail());
-                        createFriendRelationship(selectedUserKey);
+                        String selectedUserKey = Utils.encodeEmail(user.getEmail());
+                        createFriendRelationship(user);
 
                     }
                 });
@@ -89,19 +89,20 @@ public class AddFriendActivity extends AppCompatActivity {
     /**
      * Firebase Magic, adds the encoded email as a key in friends
      *
-     * @param selectedUserKey clicked friend
+     * @param selectedUser selected user
      */
-    private void createFriendRelationship(String selectedUserKey) {
+    private void createFriendRelationship(User selectedUser) {
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         DatabaseReference friendsReference = FirebaseDatabase.getInstance().getReference("friends");
 
         if (currentUser != null) {
             String currentLoggedUser = Utils.encodeEmail(currentUser.getEmail());
-            if (selectedUserKey.equalsIgnoreCase(currentLoggedUser)) {
+            String selectedUserId = Utils.encodeEmail(selectedUser.getEmail());
+            if (selectedUserId.equalsIgnoreCase(currentLoggedUser)) {
                 showSnackBar(R.string.error_cant_friend_yourself);
             } else {
-                friendsReference.child(currentLoggedUser).child(selectedUserKey).setValue(true);
+                friendsReference.child(currentLoggedUser).child(selectedUserId).setValue(selectedUser);
                 //originalUserReference.child(Constants.FIREBASE_LOCATION_USERS).child(currentLoggedUser).child("friends").child(selectedUserKey).setValue(true);
                 showSnackBar(R.string.snack_friend_added);
                 finish();

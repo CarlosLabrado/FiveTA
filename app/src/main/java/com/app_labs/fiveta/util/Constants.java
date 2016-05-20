@@ -34,4 +34,5 @@ public class Constants {
     public static final String GOOGLE_PROVIDER = "google";
     public static final String PROVIDER_DATA_DISPLAY_NAME = "displayName";
 
+    public static final String USER_FRIENDS = "friends";
 }

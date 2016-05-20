@@ -14,8 +14,11 @@ import android.widget.TextView;
 
 import com.app_labs.fiveta.R;
 import com.app_labs.fiveta.model.User;
+import com.app_labs.fiveta.util.Constants;
+import com.app_labs.fiveta.util.Utils;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
@@ -44,7 +47,7 @@ public class FriendsFragment extends Fragment {
     private String mParam2;
 
     private DatabaseReference mRef;
-    private Query mUsersRef;
+    private Query mUserFriends;
 
     private FirebaseAuth mAuth;
 
@@ -92,7 +95,6 @@ public class FriendsFragment extends Fragment {
         ButterKnife.bind(this, view);
 
         mRef = FirebaseDatabase.getInstance().getReference();
-        mUsersRef = mRef.child("users");
         mAuth = FirebaseAuth.getInstance();
 
 
@@ -101,49 +103,40 @@ public class FriendsFragment extends Fragment {
         return view;
     }
 
-    private void populateRecyclerAdapter() {
-//        mManager = new LinearLayoutManager(getContext());
-//        mFriendListRecyclerView.setLayoutManager(mManager);
-//
-//        FirebaseUser currentUser = mAuth.getCurrentUser();
-//        String currentLoggedUser = "";
-//        if (currentUser != null) {
-//            currentLoggedUser = Utils.encodeEmail(currentUser.getEmail());
-//        }
-//        mUsersRef = mRef.child("users").child(currentLoggedUser).child("friends").addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(DataSnapshot dataSnapshot) {
-//                FirebaseDatabase firebaseDatabase = mRef.child("users").child(dataSnapshot.getKey());
-//
-//            }
-//
-//            @Override
-//            public void onCancelled(DatabaseError databaseError) {
-//
-//            }
-//        },"");
 
-//        mRecyclerViewAdapter = new FirebaseRecyclerAdapter<User, UserHolder>(
-//                User.class, R.layout.item_users, UserHolder.class, mUsersRef) {
-//
-//            @Override
-//            protected void populateViewHolder(UserHolder viewHolder, final User model, int position) {
-//                viewHolder.setName(model.getName());
-//                viewHolder.setEmail(model.getEmail());
-//
-//                viewHolder.mView.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        String selectedUserKey = Utils.encodeEmail(model.getEmail());
-////                        createFriendRelationship(selectedUserKey);
-//
-//                    }
-//                });
-//
-//            }
-//        };
-//
-//        mFriendListRecyclerView.setAdapter(mRecyclerViewAdapter);
+    private void populateRecyclerAdapter() {
+        mManager = new LinearLayoutManager(getContext());
+        mFriendListRecyclerView.setLayoutManager(mManager);
+
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        String currentLoggedUser = "";
+        if (currentUser != null) {
+            currentLoggedUser = Utils.encodeEmail(currentUser.getEmail());
+        }
+
+        mUserFriends = mRef.child(Constants.USER_FRIENDS).child(currentLoggedUser);
+
+        mRecyclerViewAdapter = new FirebaseRecyclerAdapter<User, UserHolder>(
+                User.class, R.layout.item_users, UserHolder.class, mUserFriends) {
+
+            @Override
+            protected void populateViewHolder(UserHolder viewHolder, final User model, int position) {
+                viewHolder.setName(model.getName());
+                viewHolder.setEmail(model.getEmail());
+
+                viewHolder.mView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String selectedUserKey = Utils.encodeEmail(model.getEmail());
+//                        createFriendRelationship(selectedUserKey);
+
+                    }
+                });
+
+            }
+        };
+
+        mFriendListRecyclerView.setAdapter(mRecyclerViewAdapter);
     }
 
     @Override
