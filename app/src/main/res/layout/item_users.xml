@@ -48,7 +48,6 @@
                     android:id="@+id/imageViewUserPicture"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:background="@drawable/btn_cling_normal"
                     android:contentDescription="@string/cd_personal_photo_of_the_contact"
                     android:src="@drawable/ic_person_add_white_24dp"
                     android:layout_marginRight="8dp"
