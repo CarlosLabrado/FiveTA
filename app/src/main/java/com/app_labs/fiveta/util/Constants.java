@@ -41,4 +41,5 @@ public class Constants {
     public static final String FIREBASE_BUCKET = "gs://five-1302.appspot.com";
     public static final String USER_FRIENDS_IMAGES = "userImages";
     public static final String PERSONAL_ETAS = "personal";
+    public static final String PLUS_ETA_FIELD_NAME = "plusEta";
 }

@@ -1,5 +1,8 @@
 package com.app_labs.fiveta.util;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by Vazh on 13/5/2016.
  */
@@ -15,5 +18,9 @@ public class Utils {
 
     public static Long stringETAtoMilliseconds(String stringETA) {
         return Long.parseLong(stringETA) * 60 * 1000;
+    }
+
+    public static String longETAtoString(long longETA) {
+        return (new SimpleDateFormat("mm:ss")).format(new Date(longETA));
     }
 }

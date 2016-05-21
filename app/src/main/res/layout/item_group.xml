@@ -189,7 +189,7 @@
                     android:src="@drawable/ic_trash_white_24dp"/>
 
                 <android.support.design.widget.FloatingActionButton
-                    android:id="@+id/fab_remove_group_five"
+                    android:id="@+id/fab_remove_personal_five"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
@@ -210,8 +210,8 @@
                     android:layout_gravity="center"
                     android:layout_marginLeft="30dp"
                     android:layout_marginStart="30dp"
-                    android:layout_toEndOf="@+id/fab_remove_group_five"
-                    android:layout_toRightOf="@+id/fab_remove_group_five"
+                    android:layout_toEndOf="@+id/fab_remove_personal_five"
+                    android:layout_toRightOf="@+id/fab_remove_personal_five"
                     android:adjustViewBounds="false"
                     android:baselineAlignBottom="false"
                     android:src="@drawable/ic_add_white_24dp"

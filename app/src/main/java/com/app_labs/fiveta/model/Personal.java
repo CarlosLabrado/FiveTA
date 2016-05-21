@@ -7,16 +7,20 @@ import java.util.HashMap;
  */
 public class Personal {
 
-    private HashMap<String, Object> owner;
-    private HashMap<String, Object> sharedWith;
+    private HashMap<String, User> owner;
+    private HashMap<String, User> sharedWith;
     private String message;
     private Long eta;
     private Long plusEta;
     private HashMap<String, Object> timestampCreated;
     private boolean active;
     private boolean completed;
+    private int color;
 
-    public Personal(HashMap<String, Object> owner, HashMap<String, Object> sharedWith, String message, Long eta, Long plusEta, HashMap<String, Object> timestampCreated, boolean active, boolean completed) {
+    public Personal() {
+    }
+
+    public Personal(HashMap<String, User> owner, HashMap<String, User> sharedWith, String message, Long eta, Long plusEta, HashMap<String, Object> timestampCreated, boolean active, boolean completed, int color) {
         this.owner = owner;
         this.sharedWith = sharedWith;
         this.message = message;
@@ -25,22 +29,23 @@ public class Personal {
         this.timestampCreated = timestampCreated;
         this.active = active;
         this.completed = completed;
+        this.color = color;
     }
 
 
-    public HashMap<String, Object> getOwner() {
+    public HashMap<String, User> getOwner() {
         return owner;
     }
 
-    public void setOwner(HashMap<String, Object> owner) {
+    public void setOwner(HashMap<String, User> owner) {
         this.owner = owner;
     }
 
-    public HashMap<String, Object> getSharedWith() {
+    public HashMap<String, User> getSharedWith() {
         return sharedWith;
     }
 
-    public void setSharedWith(HashMap<String, Object> sharedWith) {
+    public void setSharedWith(HashMap<String, User> sharedWith) {
         this.sharedWith = sharedWith;
     }
 
@@ -90,5 +95,13 @@ public class Personal {
 
     public void setCompleted(boolean completed) {
         this.completed = completed;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
     }
 }

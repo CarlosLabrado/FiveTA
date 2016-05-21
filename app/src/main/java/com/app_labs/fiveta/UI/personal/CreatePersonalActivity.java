@@ -49,6 +49,7 @@ import com.squareup.otto.Subscribe;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Random;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -171,17 +172,19 @@ public class CreatePersonalActivity extends AppCompatActivity {
 
                 String message = String.valueOf(mEditTextPersonalMessage.getText());
 
-                HashMap<String, Object> owner = new HashMap<>();
+                HashMap<String, User> owner = new HashMap<>();
                 owner.put(Utils.encodeEmail(mCurrentUser.getEmail()), mCurrentUser);
 
-                HashMap<String, Object> sharedWith = new HashMap<>();
+                HashMap<String, User> sharedWith = new HashMap<>();
                 sharedWith.put(Utils.encodeEmail(mSelectedFriend.getEmail()), mSelectedFriend);
 
                 HashMap<String, Object> timestampCreated = new HashMap<>();
                 timestampCreated.put(Constants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
 
+                int[] androidColors = getResources().getIntArray(R.array.randomcolors);
+                int randomAndroidColor = androidColors[new Random().nextInt(androidColors.length)];
 
-                Personal personalETA = new Personal(owner, sharedWith, message, eta, 0L, timestampCreated, true, false);
+                Personal personalETA = new Personal(owner, sharedWith, message, eta, 0L, timestampCreated, true, false, randomAndroidColor);
 
                 DatabaseReference personalETAReference = databaseReference.child(Constants.PERSONAL_ETAS);
 

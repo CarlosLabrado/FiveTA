@@ -16,6 +16,13 @@
 
     <color name="tabsScrollColor">@color/termocel_red</color>
 
+    <integer-array name="randomcolors">
+        <item>@color/blue_400</item>
+        <item>@color/purple_400</item>
+        <item>@color/green_400</item>
+        <item>@color/yellow_400</item>
+    </integer-array>
+
 
     <!--Material design colors-->
     <color name="red_50">#ffebee</color>
