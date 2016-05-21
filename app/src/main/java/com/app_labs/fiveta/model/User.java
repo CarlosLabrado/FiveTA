@@ -1,11 +1,14 @@
 package com.app_labs.fiveta.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.HashMap;
 
 /**
  * Defines the data structure for User objects.
  */
-public class User {
+public class User implements Parcelable {
     private String name;
     private String email;
     private String imageUrl;
@@ -48,4 +51,37 @@ public class User {
         return timestampJoined;
     }
 
+
+    protected User(Parcel in) {
+        name = in.readString();
+        email = in.readString();
+        imageUrl = in.readString();
+        timestampJoined = (HashMap) in.readValue(HashMap.class.getClassLoader());
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeString(email);
+        dest.writeString(imageUrl);
+        dest.writeValue(timestampJoined);
+    }
+
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 }

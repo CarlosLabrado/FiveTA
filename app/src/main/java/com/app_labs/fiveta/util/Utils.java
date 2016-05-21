@@ -12,4 +12,8 @@ public class Utils {
     public static String encodeEmail(String userEmail) {
         return userEmail.replace(".", ",");
     }
+
+    public static Long stringETAtoMilliseconds(String stringETA) {
+        return Long.parseLong(stringETA) * 60 * 1000;
+    }
 }

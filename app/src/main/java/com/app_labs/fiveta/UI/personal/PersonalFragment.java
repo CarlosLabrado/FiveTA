@@ -10,6 +10,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.app_labs.fiveta.R;
+import com.app_labs.fiveta.model.User;
+import com.app_labs.fiveta.util.Constants;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -21,16 +23,12 @@ import butterknife.OnClick;
  * create an instance of this fragment.
  */
 public class PersonalFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_LOGGED_USER = "loggedUser";
     @Bind(R.id.fab_personal_add)
     FloatingActionButton mFabPersonalAdd;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private User mLoggedUser;
 
 
     public PersonalFragment() {
@@ -41,16 +39,13 @@ public class PersonalFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
+     * @param user Parameter 1.
      * @return A new instance of fragment PersonalFragment.
      */
-    // TODO: Rename and change types and number of parameters
-    public static PersonalFragment newInstance(String param1, String param2) {
+    public static PersonalFragment newInstance(User user) {
         PersonalFragment fragment = new PersonalFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putParcelable(ARG_LOGGED_USER, user);
         fragment.setArguments(args);
         return fragment;
     }
@@ -59,8 +54,7 @@ public class PersonalFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            mLoggedUser = getArguments().getParcelable(ARG_LOGGED_USER);
         }
     }
 
@@ -82,6 +76,7 @@ public class PersonalFragment extends Fragment {
     @OnClick(R.id.fab_personal_add)
     public void onClick() {
         Intent intent = new Intent(getContext(), CreatePersonalActivity.class);
+        intent.putExtra(Constants.EXTRA_USER, mLoggedUser);
         startActivity(intent);
     }
 }

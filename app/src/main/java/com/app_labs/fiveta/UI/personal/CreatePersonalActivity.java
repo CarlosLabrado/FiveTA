@@ -8,8 +8,11 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
+import android.support.annotation.StringRes;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +28,7 @@ import android.widget.Toast;
 import com.app_labs.fiveta.R;
 import com.app_labs.fiveta.events.GetTimePickedEvent;
 import com.app_labs.fiveta.events.SelectedFriendFromDialogEvent;
+import com.app_labs.fiveta.model.Personal;
 import com.app_labs.fiveta.model.User;
 import com.app_labs.fiveta.ui.custom.CircleTransform;
 import com.app_labs.fiveta.util.Constants;
@@ -32,6 +36,10 @@ import com.app_labs.fiveta.util.Utils;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -40,6 +48,7 @@ import com.squareup.otto.Subscribe;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -67,12 +76,16 @@ public class CreatePersonalActivity extends AppCompatActivity {
     ImageButton mImageButtonMinutesDown;
     @Bind(R.id.fab_personal_create_contact_add)
     FloatingActionButton mFabPersonalCreateContactAdd;
+    @Bind(R.id.containerCreatePersonal)
+    View mView;
 
     public static final String TAG = CreatePersonalActivity.class.getSimpleName();
     public static final int ACTIVITY_RESULT_CONTACT = 101;
     public static Bus mBus;
 
+
     private User mSelectedFriend;
+    private User mCurrentUser;
 
     DialogFragment mChoseFriendDialogFragment;
 
@@ -85,6 +98,11 @@ public class CreatePersonalActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_personal);
 
         ButterKnife.bind(this);
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            mCurrentUser = extras.getParcelable(Constants.EXTRA_USER);
+        }
 
         mBus = new Bus();
         mBus.register(this);
@@ -137,6 +155,52 @@ public class CreatePersonalActivity extends AppCompatActivity {
     public void onClick() {
         Toast.makeText(getApplicationContext(), "WHOA!", Toast.LENGTH_SHORT).show();
         mFabPersonalFavoriteAdd.setImageResource(R.drawable.ic_heart_yellow_24dp);
+    }
+
+    @OnClick(R.id.buttonCreatePersonalStart)
+    public void startEtaClicked() {
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+//        databaseReference.child()
+
+        if (mSelectedFriend == null) {
+            showSnackBar(R.string.snack_personal_need_a_friend);
+        } else {
+            try {
+                // Eta to Milliseconds
+                Long eta = Utils.stringETAtoMilliseconds((String) mTextViewCreatePersonalETA.getText());
+
+                String message = String.valueOf(mEditTextPersonalMessage.getText());
+
+                HashMap<String, Object> owner = new HashMap<>();
+                owner.put(Utils.encodeEmail(mCurrentUser.getEmail()), mCurrentUser);
+
+                HashMap<String, Object> sharedWith = new HashMap<>();
+                sharedWith.put(Utils.encodeEmail(mSelectedFriend.getEmail()), mSelectedFriend);
+
+                HashMap<String, Object> timestampCreated = new HashMap<>();
+                timestampCreated.put(Constants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
+
+
+                Personal personalETA = new Personal(owner, sharedWith, message, eta, 0L, timestampCreated, true, false);
+
+                DatabaseReference personalETAReference = databaseReference.child(Constants.PERSONAL_ETAS);
+
+                personalETAReference.push().setValue(personalETA, new DatabaseReference.CompletionListener() {
+                    @Override
+                    public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+                        if (databaseError == null) {
+                            finish();
+                        } else {
+                            showSnackBar(R.string.snack_personal_create_failed);
+                        }
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+                showSnackBar(R.string.snack_personal_create_failed);
+            }
+        }
+
     }
 
     @Subscribe
@@ -230,6 +294,8 @@ public class CreatePersonalActivity extends AppCompatActivity {
                 }
             });
 
+            mTextViewCreatePersonalName.setText(event.getUser().getName());
+
         }
     }
 
@@ -284,5 +350,11 @@ public class CreatePersonalActivity extends AppCompatActivity {
             }
         }
 
+    }
+
+    @MainThread
+    private void showSnackBar(@StringRes int errorMessageRes) {
+        Snackbar.make(mView, errorMessageRes, Snackbar.LENGTH_LONG)
+                .show();
     }
 }

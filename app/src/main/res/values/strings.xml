@@ -23,6 +23,8 @@
     <string name="personal_new_eta_toolbar">new ETA</string>
     <string name="personal_eta_default_start_time">20</string>
     <string name="personal_create_min">min</string>
+    <string name="snack_personal_create_failed">There was an error trying to create your ETA, Please try again.</string>
+    <string name="snack_personal_need_a_friend">You need to select a friend</string>
 
     <string name="friends_add_toolbar">Add a friend from the list</string>
 

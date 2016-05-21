@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.TransitionInflater;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import com.app_labs.fiveta.R;
 import com.app_labs.fiveta.model.User;
@@ -26,14 +27,18 @@ import com.app_labs.fiveta.ui.group.GroupFragment;
 import com.app_labs.fiveta.ui.personal.PersonalFragment;
 import com.app_labs.fiveta.util.Constants;
 import com.app_labs.fiveta.util.LogUtil;
+import com.app_labs.fiveta.util.Utils;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Stack;
 
@@ -54,6 +59,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
     View mView;
 
     private static Stack<Integer> mTabStack;
+
+    @Bind(R.id.progressBarMain)
+    ProgressBar mProgressBarMain;
 
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
@@ -81,18 +89,22 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
             return;
         }
 
-        //TODO: get the user here
-//        if (user.getPhotoUrl() != null) {
-//            Glide.with(this)
-//                    .load(user.getPhotoUrl())
-//                    .fitCenter()
-//                    .into(mUserProfilePicture);
-//        }
-//
-//        mUserEmail.setText(
-//                TextUtils.isEmpty(user.getEmail()) ? "No email" : user.getEmail());
-//        mUserDisplayName.setText(
-//                TextUtils.isEmpty(user.getDisplayName()) ? "No display name" : user.getDisplayName());
+
+        mDatabaseReference.child(Utils.encodeEmail(currentUser.getEmail())).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot != null) {
+                    mCurrentUser = dataSnapshot.getValue(User.class);
+                    mProgressBarMain.setVisibility(View.GONE);
+                    displayView(0);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
 
         mTabStack = new Stack<>();
@@ -154,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
         if (null == savedInstanceState) {
             mBottomNavigation.setOnMenuItemClickListener(this);
             mBottomNavigation.setDefaultSelectedIndex(0);
-            displayView(0);
+//            displayView(0);
         }
     }
 
@@ -177,7 +189,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
         mTabStack.push(position);
         switch (position) {
             case 0:
-                fragment = new PersonalFragment();
+                new PersonalFragment();
+                fragment = PersonalFragment.newInstance(mCurrentUser);
                 break;
             case 1:
                 fragment = new GroupFragment();
@@ -242,14 +255,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
                             startActivity(LoginActivity.createIntent(MainActivity.this));
                             finish();
                         } else {
-                            showSnackbar(R.string.sign_out_failed);
+                            showSnackBar(R.string.sign_out_failed);
                         }
                     }
                 });
     }
 
     @MainThread
-    private void showSnackbar(@StringRes int errorMessageRes) {
+    private void showSnackBar(@StringRes int errorMessageRes) {
         Snackbar.make(mView, errorMessageRes, Snackbar.LENGTH_LONG)
                 .show();
     }
