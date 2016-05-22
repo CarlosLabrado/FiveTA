@@ -55,6 +55,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.app_labs.fiveta.ui.MainActivity"/>
         </activity>
+
+        <service
+            android:name=".service.PersonalCountDownService"
+            android:exported="false">
+        </service>
     </application>
 
 </manifest>

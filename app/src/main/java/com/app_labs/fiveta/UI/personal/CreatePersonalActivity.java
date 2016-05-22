@@ -29,9 +29,9 @@ import com.app_labs.fiveta.FirstApplication;
 import com.app_labs.fiveta.R;
 import com.app_labs.fiveta.events.GetTimePickedEvent;
 import com.app_labs.fiveta.events.SelectedFriendFromDialogEvent;
-import com.app_labs.fiveta.jobs.PersonalETACountdownJob;
 import com.app_labs.fiveta.model.Personal;
 import com.app_labs.fiveta.model.User;
+import com.app_labs.fiveta.service.PersonalCountDownService;
 import com.app_labs.fiveta.ui.custom.CircleTransform;
 import com.app_labs.fiveta.util.Constants;
 import com.app_labs.fiveta.util.Utils;
@@ -50,7 +50,6 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -199,7 +198,8 @@ public class CreatePersonalActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                         if (databaseError == null) {
-                            mJobManager.addJobInBackground(new PersonalETACountdownJob(databaseReference.getKey(), eta));
+                            startCountDownService(databaseReference.getKey());
+//                            mJobManager.addJobInBackground(new PersonalETACountdownJob(databaseReference.getKey(), eta));
                             finish();
                         } else {
                             showSnackBar(R.string.snack_personal_create_failed);
@@ -211,6 +211,14 @@ public class CreatePersonalActivity extends AppCompatActivity {
                 showSnackBar(R.string.snack_personal_create_failed);
             }
         }
+
+    }
+
+    private void startCountDownService(String key) {
+        Intent intent = new Intent(this, PersonalCountDownService.class);
+        intent.putExtra(PersonalCountDownService.EXTRA_PARAM_PERSONAL_ETA_KEY, key);
+        intent.setAction(PersonalCountDownService.ACTION_START_COUNTDOWN);
+        startService(intent);
 
     }
 
@@ -275,35 +283,44 @@ public class CreatePersonalActivity extends AppCompatActivity {
         mChoseFriendDialogFragment.dismiss();
         if (event != null) {
             mSelectedFriend = event.getUser();
-            StorageReference storageRef = storage.getReferenceFromUrl(Constants.FIREBASE_BUCKET);
 
             String selectedFriendEncodedId = Utils.encodeEmail(mSelectedFriend.getEmail());
 
-            StorageReference friendImageRef = storageRef.child(Constants.USER_FRIENDS_IMAGES).child(selectedFriendEncodedId + ".jpg");
-
             File localFile = null;
             try {
-                localFile = File.createTempFile("friendimages", "jpg");
-            } catch (IOException e) {
+                localFile = new File(getCacheDir(), selectedFriendEncodedId + ".jpg");
+                if (localFile.exists()) { // if it already exists, don't go and get it
+                    Glide.with(mView.getContext())
+                            .load(localFile)
+                            .centerCrop()
+                            .transform(new CircleTransform(mView.getContext()))
+                            .into(mImageViewCreatePersonal);
+                } else {
+                    assert localFile != null;
+                    final File finalLocalFile = localFile;
+                    // firebase references
+                    StorageReference storageRef = storage.getReferenceFromUrl(Constants.FIREBASE_BUCKET);
+                    StorageReference friendImageRef = storageRef.child(Constants.USER_FRIENDS_IMAGES).child(selectedFriendEncodedId + ".jpg");
+
+                    friendImageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                            Glide.with(mView.getContext())
+                                    .load(finalLocalFile)
+                                    .centerCrop()
+                                    .transform(new CircleTransform(mView.getContext()))
+                                    .into(mImageViewCreatePersonal);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+                }
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-
-            assert localFile != null;
-            final File finalLocalFile = localFile;
-            friendImageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                    Glide.with(getApplicationContext())
-                            .load(finalLocalFile)
-                            .transform(new CircleTransform(getApplicationContext()))
-                            .into(mImageViewCreatePersonal);
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    e.printStackTrace();
-                }
-            });
 
             mTextViewCreatePersonalName.setText(event.getUser().getName());
 

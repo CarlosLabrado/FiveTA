@@ -33,7 +33,6 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
-import java.io.IOException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -192,35 +191,41 @@ public class FriendsFragment extends Fragment {
         }
 
         public void setImage(String imageName) {
-
-            StorageReference storageRef = storage.getReferenceFromUrl(Constants.FIREBASE_BUCKET);
-
-            StorageReference friendImageRef = storageRef.child(Constants.USER_FRIENDS_IMAGES).child(imageName + ".jpg");
-
             File localFile = null;
             try {
-                localFile = File.createTempFile("friendimages", "jpg");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            assert localFile != null;
-            final File finalLocalFile = localFile;
-            friendImageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                localFile = new File(mImageView.getContext().getCacheDir(), imageName + ".jpg");
+                if (localFile.exists()) { // if it already exists, don't go and get it
                     Glide.with(mView.getContext())
-                            .load(finalLocalFile)
+                            .load(localFile)
                             .centerCrop()
                             .transform(new CircleTransform(mView.getContext()))
                             .into(mImageView);
+                } else {
+                    assert localFile != null;
+                    final File finalLocalFile = localFile;
+                    // firebase references
+                    StorageReference storageRef = storage.getReferenceFromUrl(Constants.FIREBASE_BUCKET);
+                    StorageReference friendImageRef = storageRef.child(Constants.USER_FRIENDS_IMAGES).child(imageName + ".jpg");
+
+                    friendImageRef.getFile(localFile).addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                            Glide.with(mView.getContext())
+                                    .load(finalLocalFile)
+                                    .centerCrop()
+                                    .transform(new CircleTransform(mView.getContext()))
+                                    .into(mImageView);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
                 }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    e.printStackTrace();
-                }
-            });
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 }
