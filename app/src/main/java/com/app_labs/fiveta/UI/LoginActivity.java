@@ -119,15 +119,14 @@ public class LoginActivity extends Activity {
 
         unprocessedEmail = user.getEmail();
 
-        final String encodedEmail = Utils.encodeEmail(unprocessedEmail);
+        String encodedEmail = Utils.encodeEmail(unprocessedEmail);
         spe.putString(Constants.KEY_EMAIL, encodedEmail).apply();
 
         final String userName = user.getDisplayName();
 
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        final DatabaseReference userLocation = database.getReference(Constants.FIREBASE_LOCATION_USERS);
+        final DatabaseReference userLocation = database.getReference(Constants.FIREBASE_LOCATION_USERS).child(encodedEmail);
              /* If no user exists, make a user */
-        userLocation.child(encodedEmail);
 
         userLocation.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -138,8 +137,10 @@ public class LoginActivity extends Activity {
                     timestampJoined.put(Constants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
 
                     User newUser = new User(userName, unprocessedEmail, null, timestampJoined);
-                    userLocation.child(encodedEmail).setValue(newUser);
+                    userLocation.setValue(newUser);
                 }
+                startActivity(MainActivity.createIntent(LoginActivity.this));
+                finish();
             }
 
             @Override
@@ -148,9 +149,6 @@ public class LoginActivity extends Activity {
 
             }
         });
-
-        startActivity(MainActivity.createIntent(this));
-        finish();
     }
 
     @MainThread

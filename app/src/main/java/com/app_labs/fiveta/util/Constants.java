@@ -42,5 +42,6 @@ public class Constants {
     public static final String USER_FRIENDS_IMAGES = "userImages";
     public static final String PERSONAL_ETAS = "personal";
     public static final String PLUS_ETA_FIELD_NAME = "plusEta";
+    public static final String IMAGE_URL_FIELD_NAME = "imageUrl";
     public static final String ETA_FIELD_NAME = "eta";
 }

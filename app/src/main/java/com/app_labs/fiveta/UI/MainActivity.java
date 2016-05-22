@@ -2,8 +2,10 @@ package com.app_labs.fiveta.ui;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -14,9 +16,12 @@ import android.support.annotation.StringRes;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.transition.TransitionInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
@@ -31,8 +36,9 @@ import com.app_labs.fiveta.util.LogUtil;
 import com.app_labs.fiveta.util.Utils;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -40,7 +46,11 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.Stack;
 
@@ -48,6 +58,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import it.sephiroth.android.library.bottomnavigation.BottomNavigation;
 import it.sephiroth.android.library.bottonnavigation.BuildConfig;
+import pl.aprilapps.easyphotopicker.DefaultCallback;
+import pl.aprilapps.easyphotopicker.EasyImage;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigation.OnMenuItemSelectionListener {
 
@@ -72,8 +84,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
     private DatabaseReference mDatabaseReference;
     private ValueEventListener mValueEventListener;
 
-
-    private FirebaseApp mUserRef;
 
     private User mCurrentUser;
 
@@ -103,6 +113,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot != null) {
                     mCurrentUser = dataSnapshot.getValue(User.class);
+                    if (mCurrentUser.getImageUrl() == null || mCurrentUser.getImageUrl().isEmpty()) {
+                        askForImage(Utils.encodeEmail(mCurrentUser.getEmail()));
+                    }
                     mProgressBarMain.setVisibility(View.GONE);
 
                     displayView(0);
@@ -287,6 +300,97 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
         Snackbar.make(mView, errorMessageRes, Snackbar.LENGTH_LONG)
                 .show();
     }
+
+    private void askForImage(final String userKey) {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(getResources().getString(R.string.dialog_no_image))
+                .setCancelable(false)
+                .setPositiveButton(getResources().getString(R.string.dialog_no_image_confirm), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        EasyImage.openChooserWithGallery(MainActivity.this, "Pick Image", 0);
+
+                    }
+                });
+        AlertDialog alert = builder.create();
+        alert.setCancelable(false);
+        alert.show();
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        EasyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
+            @Override
+            public void onImagePickerError(Exception e, EasyImage.ImageSource source, int type) {
+                //Some error handling
+            }
+
+            @Override
+            public void onImagePicked(File imageFile, EasyImage.ImageSource source, int type) {
+                //Handle the image
+                onPhotoReturned(imageFile);
+            }
+
+
+        });
+    }
+
+    private void onPhotoReturned(File imageFile) {
+        mProgressBarMain.setVisibility(View.VISIBLE);
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+
+        StorageReference storageRef = storage.getReferenceFromUrl(Constants.FIREBASE_BUCKET);
+        final String imageName = Utils.encodeEmail(mCurrentUser.getEmail()) + ".jpg";
+        StorageReference imageRef = storageRef.child(Constants.USER_FRIENDS_IMAGES).child(imageName);
+
+        Uri file = Uri.fromFile(imageFile);
+        UploadTask uploadTask = imageRef.putFile(file);
+
+        // Register observers to listen for when the download is done or if it fails
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                updateUserWithImagePath(imageName);
+                mProgressBarMain.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    private void updateUserWithImagePath(String imageName) {
+        mDatabaseReference.child(Utils.encodeEmail(mCurrentUser.getEmail())).child(Constants.IMAGE_URL_FIELD_NAME).setValue(imageName);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_logout) {
+            signOut();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
 
     public static Intent createIntent(Context context) {
         Intent in = new Intent();
