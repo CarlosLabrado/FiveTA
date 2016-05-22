@@ -198,7 +198,7 @@ public class PersonalFragment extends Fragment {
      * @param plusEta        the actual plus
      */
     private void removeFiveToPlusETA(String personalETAKey, Long plusEta) {
-        long newPlusETA = plusEta - 5000;
+        long newPlusETA = plusEta - Utils.stringETAtoMilliseconds("5"); // minus five minutes
         if (newPlusETA < 0) {
             newPlusETA = 0;
         }

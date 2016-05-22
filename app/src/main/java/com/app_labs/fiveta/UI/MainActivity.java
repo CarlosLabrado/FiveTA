@@ -1,5 +1,6 @@
 package com.app_labs.fiveta.ui;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -40,6 +41,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.lang.ref.WeakReference;
 import java.util.Stack;
 
 import butterknife.Bind;
@@ -50,6 +52,9 @@ import it.sephiroth.android.library.bottonnavigation.BuildConfig;
 public class MainActivity extends AppCompatActivity implements BottomNavigation.OnMenuItemSelectionListener {
 
     private static final String TAG = LogUtil.makeLogTag(MainActivity.class);
+
+    private static WeakReference<MainActivity> wrActivity = null;
+
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -65,6 +70,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
 
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mDatabaseReference;
+    private ValueEventListener mValueEventListener;
+
 
     private FirebaseApp mUserRef;
 
@@ -79,6 +86,8 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        wrActivity = new WeakReference<MainActivity>(this);
+
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mDatabaseReference = mFirebaseDatabase.getReference(Constants.FIREBASE_LOCATION_USERS);
 
@@ -89,13 +98,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
             return;
         }
 
-
-        mDatabaseReference.child(Utils.encodeEmail(currentUser.getEmail())).addListenerForSingleValueEvent(new ValueEventListener() {
+        mValueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if (dataSnapshot != null) {
                     mCurrentUser = dataSnapshot.getValue(User.class);
                     mProgressBarMain.setVisibility(View.GONE);
+
                     displayView(0);
                 }
             }
@@ -104,7 +113,9 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
             public void onCancelled(DatabaseError databaseError) {
 
             }
-        });
+        };
+
+        mDatabaseReference.child(Utils.encodeEmail(currentUser.getEmail())).addListenerForSingleValueEvent(mValueEventListener);
 
 
         mTabStack = new Stack<>();
@@ -185,39 +196,42 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
     private void displayView(int position) {
         // update the main content by replacing fragments
         Fragment fragment = null;
+        final Activity activity = wrActivity.get();
 
-        mTabStack.push(position);
-        switch (position) {
-            case 0:
-                new PersonalFragment();
-                fragment = PersonalFragment.newInstance(mCurrentUser);
-                break;
-            case 1:
-                fragment = new GroupFragment();
-                break;
-            case 2:
-                fragment = new FavoritesFragment();
-                break;
-            case 3:
-                fragment = new FriendsFragment();
-                break;
-            default:
-                break;
-        }
-        if (fragment != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                fragment.setEnterTransition(TransitionInflater.from(this).inflateTransition(android.R.transition.explode));
-                fragment.setExitTransition(TransitionInflater.from(this).inflateTransition(android.R.transition.fade));
+        if (!isFinishing()) {
+            mTabStack.push(position);
+            switch (position) {
+                case 0:
+                    new PersonalFragment();
+                    fragment = PersonalFragment.newInstance(mCurrentUser);
+                    break;
+                case 1:
+                    fragment = new GroupFragment();
+                    break;
+                case 2:
+                    fragment = new FavoritesFragment();
+                    break;
+                case 3:
+                    fragment = new FriendsFragment();
+                    break;
+                default:
+                    break;
             }
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction()
-                    .addToBackStack(null)
-                    .replace(R.id.container, fragment)
-                    .commit();
-            LogUtil.logD(TAG, "fragment added " + fragment.getTag());
-        } else {
-            // error in creating fragment
-            LogUtil.logE(TAG, "Error in creating fragment");
+            if (fragment != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    fragment.setEnterTransition(TransitionInflater.from(this).inflateTransition(android.R.transition.explode));
+                    fragment.setExitTransition(TransitionInflater.from(this).inflateTransition(android.R.transition.fade));
+                }
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction()
+                        .addToBackStack(null)
+                        .replace(R.id.container, fragment)
+                        .commitAllowingStateLoss(); // why? http://stackoverflow.com/questions/7575921/illegalstateexception-can-not-perform-this-action-after-onsaveinstancestate-wit
+                LogUtil.logD(TAG, "fragment added " + fragment.getTag());
+            } else {
+                // error in creating fragment
+                LogUtil.logE(TAG, "Error in creating fragment");
+            }
         }
     }
 
@@ -259,6 +273,13 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
                         }
                     }
                 });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ButterKnife.unbind(this);
+        mDatabaseReference.removeEventListener(mValueEventListener);
     }
 
     @MainThread
