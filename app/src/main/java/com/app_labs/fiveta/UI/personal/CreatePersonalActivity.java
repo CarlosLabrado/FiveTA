@@ -25,14 +25,17 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.app_labs.fiveta.FirstApplication;
 import com.app_labs.fiveta.R;
 import com.app_labs.fiveta.events.GetTimePickedEvent;
 import com.app_labs.fiveta.events.SelectedFriendFromDialogEvent;
+import com.app_labs.fiveta.jobs.PersonalETACountdownJob;
 import com.app_labs.fiveta.model.Personal;
 import com.app_labs.fiveta.model.User;
 import com.app_labs.fiveta.ui.custom.CircleTransform;
 import com.app_labs.fiveta.util.Constants;
 import com.app_labs.fiveta.util.Utils;
+import com.birbit.android.jobqueue.JobManager;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -90,6 +93,7 @@ public class CreatePersonalActivity extends AppCompatActivity {
 
     DialogFragment mChoseFriendDialogFragment;
 
+    JobManager mJobManager;
 
     FirebaseStorage storage = FirebaseStorage.getInstance();
 
@@ -99,6 +103,8 @@ public class CreatePersonalActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_personal);
 
         ButterKnife.bind(this);
+
+        mJobManager = FirstApplication.getInstance().getJobManager();
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -168,7 +174,7 @@ public class CreatePersonalActivity extends AppCompatActivity {
         } else {
             try {
                 // Eta to Milliseconds
-                Long eta = Utils.stringETAtoMilliseconds((String) mTextViewCreatePersonalETA.getText());
+                final Long eta = Utils.stringETAtoMilliseconds((String) mTextViewCreatePersonalETA.getText());
 
                 String message = String.valueOf(mEditTextPersonalMessage.getText());
 
@@ -181,6 +187,7 @@ public class CreatePersonalActivity extends AppCompatActivity {
                 HashMap<String, Object> timestampCreated = new HashMap<>();
                 timestampCreated.put(Constants.FIREBASE_PROPERTY_TIMESTAMP, ServerValue.TIMESTAMP);
 
+
                 int[] androidColors = getResources().getIntArray(R.array.randomcolors);
                 int randomAndroidColor = androidColors[new Random().nextInt(androidColors.length)];
 
@@ -192,6 +199,7 @@ public class CreatePersonalActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
                         if (databaseError == null) {
+                            mJobManager.addJobInBackground(new PersonalETACountdownJob(databaseReference.getKey(), eta));
                             finish();
                         } else {
                             showSnackBar(R.string.snack_personal_create_failed);

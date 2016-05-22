@@ -198,7 +198,7 @@ public class PersonalFragment extends Fragment {
      * @param plusEta        the actual plus
      */
     private void removeFiveToPlusETA(String personalETAKey, Long plusEta) {
-        long newPlusETA = plusEta - Utils.stringETAtoMilliseconds("5");
+        long newPlusETA = plusEta - 5000;
         if (newPlusETA < 0) {
             newPlusETA = 0;
         }
@@ -299,7 +299,11 @@ public class PersonalFragment extends Fragment {
         }
 
         public void setEta(long eta) {
-            mEta.setText(Utils.longETAtoString(eta));
+            if (eta > 0) {
+                mEta.setText(Utils.longETAtoString(eta));
+            } else {
+                mEta.setText(Utils.longETAtoString(0));
+            }
         }
 
         public void setColor(int color) {
