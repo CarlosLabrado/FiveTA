@@ -1,6 +1,5 @@
 package com.app_labs.fiveta.ui;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -51,7 +50,6 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
 import java.util.Stack;
 
 import butterknife.Bind;
@@ -64,9 +62,6 @@ import pl.aprilapps.easyphotopicker.EasyImage;
 public class MainActivity extends AppCompatActivity implements BottomNavigation.OnMenuItemSelectionListener {
 
     private static final String TAG = LogUtil.makeLogTag(MainActivity.class);
-
-    private static WeakReference<MainActivity> wrActivity = null;
-
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -96,8 +91,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        wrActivity = new WeakReference<MainActivity>(this);
-
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mDatabaseReference = mFirebaseDatabase.getReference(Constants.FIREBASE_LOCATION_USERS);
 
@@ -107,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
             finish();
             return;
         }
+
 
         mValueEventListener = new ValueEventListener() {
             @Override
@@ -209,7 +203,6 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
     private void displayView(int position) {
         // update the main content by replacing fragments
         Fragment fragment = null;
-        final Activity activity = wrActivity.get();
 
         if (!isFinishing()) {
             mTabStack.push(position);

@@ -121,7 +121,8 @@ public class PersonalFragment extends Fragment {
             currentLoggedUser = Utils.encodeEmail(currentUser.getEmail());
         }
 
-        mPersonalETAs = mRef.child(Constants.PERSONAL_ETAS).orderByChild("owner").startAt(currentLoggedUser);
+//        mPersonalETAs = mRef.child(Constants.PERSONAL_ETAS).orderByChild("owner").startAt(currentLoggedUser);
+        mPersonalETAs = mRef.child(Constants.PERSONAL_ETAS).orderByKey().startAt("owner").orderByChild(currentLoggedUser);
 
         mRecyclerViewAdapter = new FirebaseRecyclerAdapter<Personal, PersonalHolder>(
                 Personal.class, R.layout.item_personal, PersonalHolder.class, mPersonalETAs) {
