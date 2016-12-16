@@ -34,9 +34,10 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -48,10 +49,12 @@ public class FriendsFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    @Bind(R.id.friendLists)
+    @BindView(R.id.friendLists)
     RecyclerView mFriendListRecyclerView;
-    @Bind(R.id.fab_friend_add)
+    @BindView(R.id.fab_friend_add)
     FloatingActionButton mFabFriendAdd;
+
+    private Unbinder unbinder;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -103,7 +106,7 @@ public class FriendsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_friends, container, false);
-        ButterKnife.bind(this, view);
+        unbinder = ButterKnife.bind(this, view);
 
         mRef = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
@@ -155,12 +158,12 @@ public class FriendsFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
+        unbinder.unbind();
     }
 
     @OnClick(R.id.fab_friend_add)
     public void onClick() {
-        Intent intent = new Intent(getActivity(), AddFriendActivity.class);
+        Intent intent = new Intent(getActivity(), com.app_labs.fiveta.ui.Friends.AddFriendActivity.class);
         startActivity(intent);
     }
 

@@ -40,9 +40,10 @@ import com.google.firebase.storage.StorageReference;
 import java.io.File;
 import java.util.Map;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
 
 
 /**
@@ -53,9 +54,9 @@ import butterknife.OnClick;
 public class PersonalFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_LOGGED_USER = "loggedUser";
-    @Bind(R.id.fab_personal_add)
+    @BindView(R.id.fab_personal_add)
     FloatingActionButton mFabPersonalAdd;
-    @Bind(R.id.recyclerViewPersonalETAs)
+    @BindView(R.id.recyclerViewPersonalETAs)
     RecyclerView mRecyclerViewPersonalETAs;
 
     private User mLoggedUser;
@@ -67,6 +68,7 @@ public class PersonalFragment extends Fragment {
     private LinearLayoutManager mManager;
     private FirebaseRecyclerAdapter<Personal, PersonalHolder> mRecyclerViewAdapter;
 
+    private Unbinder unbinder;
 
     public PersonalFragment() {
         // Required empty public constructor
@@ -100,7 +102,7 @@ public class PersonalFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_personal, container, false);
-        ButterKnife.bind(this, view);
+        unbinder = ButterKnife.bind(this, view);
 
         mRef = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
@@ -122,7 +124,8 @@ public class PersonalFragment extends Fragment {
         }
 
 //        mPersonalETAs = mRef.child(Constants.PERSONAL_ETAS).orderByChild("owner").startAt(currentLoggedUser);
-        mPersonalETAs = mRef.child(Constants.PERSONAL_ETAS).orderByKey().startAt("owner").orderByChild(currentLoggedUser);
+//        mPersonalETAs = mRef.child(Constants.PERSONAL_ETAS).orderByKey().startAt("owner").orderByChild(currentLoggedUser); cannot have multiple orderby error ?
+        mPersonalETAs = mRef.child(Constants.PERSONAL_ETAS).orderByChild(currentLoggedUser);
 
         mRecyclerViewAdapter = new FirebaseRecyclerAdapter<Personal, PersonalHolder>(
                 Personal.class, R.layout.item_personal, PersonalHolder.class, mPersonalETAs) {
@@ -244,12 +247,12 @@ public class PersonalFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
+        unbinder.unbind();
     }
 
     @OnClick(R.id.fab_personal_add)
     public void onClick() {
-        Intent intent = new Intent(getContext(), CreatePersonalActivity.class);
+        Intent intent = new Intent(getContext(), com.app_labs.fiveta.ui.personal.CreatePersonalActivity.class);
         intent.putExtra(Constants.EXTRA_USER, mLoggedUser);
         startActivity(intent);
     }
@@ -259,21 +262,21 @@ public class PersonalFragment extends Fragment {
      */
     public static class PersonalHolder extends RecyclerView.ViewHolder {
         View mView;
-        @Bind(R.id.linearLayoutItemPersonal)
+        @BindView(R.id.linearLayoutItemPersonal)
         LinearLayout mBackgroundContainer;
-        @Bind(R.id.imageViewPersonalItemContactImage)
+        @BindView(R.id.imageViewPersonalItemContactImage)
         ImageView mImageView;
-        @Bind(R.id.fab_add_personal_five)
+        @BindView(R.id.fab_add_personal_five)
         FloatingActionButton mFabAdd;
-        @Bind(R.id.fab_remove_personal_five)
+        @BindView(R.id.fab_remove_personal_five)
         FloatingActionButton mFabRemove;
-        @Bind(R.id.textViewPersonalItemContactName)
+        @BindView(R.id.textViewPersonalItemContactName)
         TextView mFriendName;
-        @Bind(R.id.textViewPersonalItemETA)
+        @BindView(R.id.textViewPersonalItemETA)
         TextView mEta;
-        @Bind(R.id.textViewPersonalItemMessage)
+        @BindView(R.id.textViewPersonalItemMessage)
         TextView mMessage;
-        @Bind(R.id.imageButtonPersonalItemDelete)
+        @BindView(R.id.imageButtonPersonalItemDelete)
         ImageButton mImageButtonDelete;
 
         FirebaseStorage storage = FirebaseStorage.getInstance();

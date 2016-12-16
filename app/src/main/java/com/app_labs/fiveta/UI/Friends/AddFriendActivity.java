@@ -34,16 +34,16 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class AddFriendActivity extends AppCompatActivity {
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
-    @Bind(R.id.friendLists)
+    @BindView(R.id.friendLists)
     RecyclerView mFriendListsRecyclerView;
-    @Bind(R.id.addFriendRootView)
+    @BindView(R.id.addFriendRootView)
     CoordinatorLayout mRootView;
 
     private FirebaseAuth mAuth;

@@ -12,6 +12,7 @@ import com.app_labs.fiveta.R;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import butterknife.Unbinder;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -28,6 +29,7 @@ public class GroupFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
+    private Unbinder unbinder;
 
     public GroupFragment() {
         // Required empty public constructor
@@ -65,19 +67,19 @@ public class GroupFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_group, container, false);
-        ButterKnife.bind(this, view);
+        unbinder = ButterKnife.bind(this, view);
         return view;
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
+        unbinder.unbind();
     }
 
     @OnClick(R.id.fab_group_add)
     public void onClick() {
-        Intent intent = new Intent(getActivity(), CreateGroupActivity.class);
+        Intent intent = new Intent(getActivity(), com.app_labs.fiveta.ui.group.CreateGroupActivity.class);
         startActivity(intent);
     }
 }

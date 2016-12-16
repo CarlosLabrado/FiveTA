@@ -34,8 +34,9 @@ import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -45,7 +46,7 @@ import butterknife.ButterKnife;
 public class ChoseFriendDialogFragment extends DialogFragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_CURRENT_USER = "currentUser";
-    @Bind(R.id.recyclerViewFriendListDialog)
+    @BindView(R.id.recyclerViewFriendListDialog)
     RecyclerView mRecyclerViewFriendList;
 
     private String mCurrentUserStringRef;
@@ -59,6 +60,7 @@ public class ChoseFriendDialogFragment extends DialogFragment {
     private LinearLayoutManager mManager;
     private FirebaseRecyclerAdapter<User, UserHolder> mRecyclerViewAdapter;
 
+    private Unbinder unbinder;
 
     public ChoseFriendDialogFragment() {
         // Required empty public constructor
@@ -93,7 +95,7 @@ public class ChoseFriendDialogFragment extends DialogFragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_chose_friend_dialog, container, false);
 
-        ButterKnife.bind(this, view);
+        unbinder = ButterKnife.bind(this, view);
 
         mRef = FirebaseDatabase.getInstance().getReference();
         mAuth = FirebaseAuth.getInstance();
@@ -131,7 +133,7 @@ public class ChoseFriendDialogFragment extends DialogFragment {
                 viewHolder.mView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        CreatePersonalActivity.mBus.post(new SelectedFriendFromDialogEvent(model));
+                        com.app_labs.fiveta.ui.personal.CreatePersonalActivity.mBus.post(new SelectedFriendFromDialogEvent(model));
 
                     }
                 });
@@ -145,7 +147,7 @@ public class ChoseFriendDialogFragment extends DialogFragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
+        unbinder.unbind();
     }
 
     public static class UserHolder extends RecyclerView.ViewHolder {

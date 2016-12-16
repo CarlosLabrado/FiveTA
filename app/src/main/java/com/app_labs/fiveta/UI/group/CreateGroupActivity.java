@@ -27,22 +27,22 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Subscribe;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class CreateGroupActivity extends AppCompatActivity implements OnMapReadyCallback {
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
-    @Bind(R.id.fab_group_favorite_add)
+    @BindView(R.id.fab_group_favorite_add)
     FloatingActionButton mFabGroupFavoriteAdd;
-    @Bind(R.id.editTextGroupTitle)
+    @BindView(R.id.editTextGroupTitle)
     EditText mEditTextGroupTitle;
-    @Bind(R.id.fab_group_create_contact_add)
+    @BindView(R.id.fab_group_create_contact_add)
     FloatingActionButton mFabGroupCreateContactAdd;
-    @Bind(R.id.buttonCreateGroupStart)
+    @BindView(R.id.buttonCreateGroupStart)
     Button mButtonCreateGroupStart;
-    @Bind(R.id.textViewCreateGroupTime)
+    @BindView(R.id.textViewCreateGroupTime)
     TextView mTextViewCreateGroupTime;
 
     int PLACE_PICKER_REQUEST = 1;

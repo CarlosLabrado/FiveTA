@@ -29,15 +29,15 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 
 public class LoginActivity extends Activity {
-    @Bind(R.id.loginContainer)
+    @BindView(R.id.loginContainer)
     View mView;
-    @Bind(R.id.buttonLogin)
+    @BindView(R.id.buttonLogin)
     Button mButtonLogin;
 
     private static final String GOOGLE_TOS_URL =

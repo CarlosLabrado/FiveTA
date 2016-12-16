@@ -53,33 +53,33 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Random;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class CreatePersonalActivity extends AppCompatActivity {
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar mToolbar;
-    @Bind(R.id.fab_personal_favorite_add)
+    @BindView(R.id.fab_personal_favorite_add)
     FloatingActionButton mFabPersonalFavoriteAdd;
-    @Bind(R.id.imageViewCreatePersonal)
+    @BindView(R.id.imageViewCreatePersonal)
     ImageView mImageViewCreatePersonal;
-    @Bind(R.id.textViewCreatePersonalName)
+    @BindView(R.id.textViewCreatePersonalName)
     TextView mTextViewCreatePersonalName;
-    @Bind(R.id.editTextPersonalMessage)
+    @BindView(R.id.editTextPersonalMessage)
     EditText mEditTextPersonalMessage;
-    @Bind(R.id.textViewCreatePersonalETA)
+    @BindView(R.id.textViewCreatePersonalETA)
     TextView mTextViewCreatePersonalETA;
-    @Bind(R.id.buttonCreatePersonalStart)
+    @BindView(R.id.buttonCreatePersonalStart)
     Button mButtonCreatePersonalStart;
-    @Bind(R.id.imageButtonMinutesUp)
+    @BindView(R.id.imageButtonMinutesUp)
     ImageButton mImageButtonMinutesUp;
-    @Bind(R.id.imageButtonMinutesDown)
+    @BindView(R.id.imageButtonMinutesDown)
     ImageButton mImageButtonMinutesDown;
-    @Bind(R.id.fab_personal_create_contact_add)
+    @BindView(R.id.fab_personal_create_contact_add)
     FloatingActionButton mFabPersonalCreateContactAdd;
-    @Bind(R.id.containerCreatePersonal)
+    @BindView(R.id.containerCreatePersonal)
     View mView;
 
     public static final String TAG = CreatePersonalActivity.class.getSimpleName();

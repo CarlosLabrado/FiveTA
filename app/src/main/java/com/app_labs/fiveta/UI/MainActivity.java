@@ -52,8 +52,9 @@ import com.google.firebase.storage.UploadTask;
 import java.io.File;
 import java.util.Stack;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.Unbinder;
 import it.sephiroth.android.library.bottomnavigation.BottomNavigation;
 import it.sephiroth.android.library.bottonnavigation.BuildConfig;
 import pl.aprilapps.easyphotopicker.DefaultCallback;
@@ -63,16 +64,16 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
 
     private static final String TAG = LogUtil.makeLogTag(MainActivity.class);
 
-    @Bind(R.id.toolbar)
+    @BindView(R.id.toolbar)
     Toolbar toolbar;
-    @Bind(R.id.bottomNavigation)
+    @BindView(R.id.bottomNavigation)
     BottomNavigation mBottomNavigation;
-    @Bind(R.id.coordinatorLayout)
+    @BindView(R.id.coordinatorLayout)
     View mView;
 
     private static Stack<Integer> mTabStack;
 
-    @Bind(R.id.progressBarMain)
+    @BindView(R.id.progressBarMain)
     ProgressBar mProgressBarMain;
 
     private FirebaseDatabase mFirebaseDatabase;
@@ -82,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
 
     private User mCurrentUser;
 
+    private Unbinder unbinder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,14 +91,14 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
         BottomNavigation.DEBUG = BuildConfig.DEBUG;
 
         setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+        unbinder = ButterKnife.bind(this);
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mDatabaseReference = mFirebaseDatabase.getReference(Constants.FIREBASE_LOCATION_USERS);
 
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser == null) {
-            startActivity(LoginActivity.createIntent(this));
+            startActivity(com.app_labs.fiveta.ui.LoginActivity.createIntent(this));
             finish();
             return;
         }
@@ -272,7 +274,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if (task.isSuccessful()) {
-                            startActivity(LoginActivity.createIntent(MainActivity.this));
+                            startActivity(com.app_labs.fiveta.ui.LoginActivity.createIntent(MainActivity.this));
                             finish();
                         } else {
                             showSnackBar(R.string.sign_out_failed);
@@ -284,7 +286,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigation.
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ButterKnife.unbind(this);
+        unbinder.unbind();
         mDatabaseReference.removeEventListener(mValueEventListener);
     }
 
